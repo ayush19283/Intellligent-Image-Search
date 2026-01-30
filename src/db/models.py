@@ -23,6 +23,7 @@ class File(Base):
     Description = Column(String(512))
     UploadedAt = Column(DateTime, default = func.now())
     Embedding = Column(Vector(512))
+    Url = Column(Text)
 
     UserId = Column(Integer, ForeignKey("user.ID"))
 
