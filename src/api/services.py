@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from src.db import models
 from fastapi import UploadFile
+from datetime import datetime
 
 def signup(db: Session, email: str, password: str, name: str=""):
     usr = models.User
@@ -29,8 +30,17 @@ def signin(db: Session, email: str, password: str):
     
     return {"error": "email not found"}
 
-def uploadFile(db: Session, file: UploadFile):
-    if not file:
+async def uploadFile(db: Session, uploadedfile: UploadFile):
+    if not uploadedfile:
         return {"error":"No file attached"}
     else:
-        return {"file recived",file.filename}
+        with open(f"uploads/{datetime.now()}.png","wb") as f:
+            f.write(await uploadedfile.read())
+
+        file = models.File(Name = uploadedfile.filename, Url = f"uploads/{datetime.now()}.png")
+
+        db.add(file)
+        db.commit()
+        db.refresh(file)
+       
+        return {"file recived",uploadedfile.filename}
