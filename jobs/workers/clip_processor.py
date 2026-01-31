@@ -53,14 +53,15 @@ def generate_encoding_for_channel(ch, method, properties, body):
     print("Received message for generating CLIP encoding", body)
 
     embeddings = encode_text(text=body.decode('utf-8'))
-    if not embeddings:
-        print(f"Failed to generate embeddings for text: {body.decode('utf-8')}")
-        redis_client.publish('encoding_results', json.dumps({
-            'embeddings': None
-        }))
-        return
+    return embeddings
+    # if not embeddings:
+    #     print(f"Failed to generate embeddings for text: {body.decode('utf-8')}")
+    #     redis_client.publish('encoding_results', json.dumps({
+    #         'embeddings': None
+    #     }))
+    #     return
     
-    print(embeddings)
-    redis_client.publish('encoding_results', json.dumps({
-        'embeddings': embeddings
-    }))
+    # print(embeddings)
+    # redis_client.publish('encoding_results', json.dumps({
+    #     'embeddings': embeddings
+    # }))

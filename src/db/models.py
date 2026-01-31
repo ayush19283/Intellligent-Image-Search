@@ -32,9 +32,9 @@ class Job(Base):
 
     ID = Column(Integer, primary_key=True)
     FileId = Column(Integer,ForeignKey("files.ID"))
-    StartedAt = Column(DateTime)
-    EndedAt = Column(DateTime)
-    FaceEncodingStatus = Column(DateTime)
+    StartedAt = Column(DateTime, default = func.now())
+    EndedAt = Column(DateTime, default = func.now())
+    FaceEncodingStatus = Column(String(50))
     UniversalEncodingStatus = Column(String(50))
 
 

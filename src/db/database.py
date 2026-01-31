@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from typing import Generator
 import os
 from .models import Base
-
+import redis
 load_dotenv()
 
 
@@ -15,6 +15,10 @@ if not DSN:
 engine = create_engine(DSN, pool_pre_ping=True)
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+
+def get_redis_client():
+    r = redis.Redis(host = os.getenv("REDIS_HOST"), port = os.getenv("REDIS_PORT"), decode_responses=True)
+    return r
 
 def get_db() -> Generator[Session, None, None]:
     db = SessionLocal()
