@@ -6,8 +6,14 @@ import psycopg2.extras
 
 def get_conn():
     # Get config from environment
+    dsn = os.getenv("DSN")
+    print(dsn)
+    if not dsn:
+        raise ValueError("DSN environment variable is not set.")
+    
+
     conn = psycopg2.connect(
-        os.getenv("DSN")
+        dsn
     )
     
     # Create cursor
