@@ -31,7 +31,7 @@ def process_image(ch, method, properties, body):
     conn, cur = db_client.get_conn()
     cur.execute(
         "Select url, files.id from files JOIN jobs ON files.id = jobs.file_id WHERE " \
-         "jobs.id == %s AND jobs.universal_encoding_status == 'pending'",(job_id,)
+         "jobs.id = %s AND jobs.universal_encoding_status = 'pending'",(job_id,)
     )
 
     job = cur.fetchone()
