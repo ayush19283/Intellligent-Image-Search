@@ -38,7 +38,7 @@ async def uploadFile(db: Session, uploadedfile: UploadFile):
         with open(f"uploads/{datetime.now()}.png","wb") as f:
             f.write(await uploadedfile.read())
 
-        file = models.File(Name = uploadedfile.filename, Url = f"uploads/{datetime.now()}.png")
+        file = models.File(Name = uploadedfile.filename, Url = f"uploads/{datetime.now()}.png", UserId = 1)
 
         db.add(file)
         db.commit()
