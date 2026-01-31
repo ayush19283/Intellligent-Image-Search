@@ -24,10 +24,6 @@ def encode_image(image):
     outputs = model.get_image_features(**inputs)
     return outputs[0].detach().cpu().numpy().tolist()
 
-def encode_text(text):
-    inputs = processor(text=[text], return_tensors="pt", padding=True)
-    outputs = model.get_text_features(**inputs)
-    return outputs[0].detach().cpu().numpy().tolist()
 
 def process_image(ch, method, properties, body):
     print("Received message for encoding image", body)
@@ -58,19 +54,3 @@ def process_image(ch, method, properties, body):
     conn.commit()
     return
 
-def generate_encoding_for_channel(ch, method, properties, body):
-    print("Received message for generating CLIP encoding", body)
-
-    embeddings = encode_text(text=body.decode('utf-8'))
-    return embeddings
-    # if not embeddings:
-    #     print(f"Failed to generate embeddings for text: {body.decode('utf-8')}")
-    #     redis_client.publish('encoding_results', json.dumps({
-    #         'embeddings': None
-    #     }))
-    #     return
-    
-    # print(embeddings)
-    # redis_client.publish('encoding_results', json.dumps({
-    #     'embeddings': embeddings
-    # }))
