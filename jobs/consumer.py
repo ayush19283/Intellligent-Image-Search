@@ -33,11 +33,6 @@ def main():
                         on_message_callback = face_encoder.process_image
                         )
 
-    channel.queue_declare(queue='generate_clip_encoding')
-    channel.basic_consume(queue='generate_clip_encoding',
-                    auto_ack=True,
-                    on_message_callback=clip_processor.generate_encoding_for_channel
-                    )
     channel.start_consuming()
 
 if __name__ == '__main__':
