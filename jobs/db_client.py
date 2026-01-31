@@ -7,7 +7,7 @@ import psycopg2.extras
 def get_conn():
     # Get config from environment
     dsn = os.getenv("DSN")
-    print(dsn)
+    print("dsn is this",dsn)
     if not dsn:
         raise ValueError("DSN environment variable is not set.")
     

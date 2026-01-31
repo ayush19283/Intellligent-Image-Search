@@ -19,7 +19,7 @@ class File(Base):
     __tablename__ = "files"
 
     ID = Column(Integer,primary_key=True)
-    Name = Column(String(120),unique=True)
+    Name = Column(String(120))
     Description = Column(String(512))
     UploadedAt = Column(DateTime, default = func.now())
     Embedding = Column(Vector(512))
