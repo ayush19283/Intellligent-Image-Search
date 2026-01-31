@@ -26,8 +26,8 @@ def TriggerQueue(chName, message):
                       routing_key=key,
                       body=message)
 
-def TriggerImageProcessingJob(imageId: int):
-    db = next(get_db())
+def TriggerImageProcessingJob(imageId: int, db):
+    
 
     job = models.Job(FileId = imageId, FaceEncodingStatus = 'pending', UniversalEncodingStatus = 'pending')
     db.add(job)
