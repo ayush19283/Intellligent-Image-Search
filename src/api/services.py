@@ -44,6 +44,8 @@ async def uploadFile(db: Session, uploadedfile: UploadFile):
         db.commit()
         db.refresh(file)
 
+        print("received file - invoking queue")
+
         utils.TriggerImageProcessingJob(file.ID,db)
        
         return {"file recived",uploadedfile.filename}

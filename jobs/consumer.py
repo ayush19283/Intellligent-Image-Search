@@ -22,7 +22,7 @@ def main():
 
 
     channel.queue_declare(queue='clip_processor')
-    channel.basic_consume(queue='clip_porcessor',
+    channel.basic_consume(queue='clip_processor',
                         auto_ack=True,
                         on_message_callback = clip_processor.process_image
                         )
