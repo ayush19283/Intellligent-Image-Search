@@ -48,4 +48,4 @@ async def uploadFile(db: Session, uploadedfile: UploadFile):
 
         TriggerImageProcessingJob(file.id,db)
        
-        return {"file recived",uploadedfile.filename}
+        return {"file":uploadedfile.filename}
