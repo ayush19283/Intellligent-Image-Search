@@ -36,7 +36,7 @@ def TriggerQueue(chName, message):
 def TriggerImageProcessingJob(imageId: int, db):
 
 
-    job = models.Job(FileId = imageId, FaceEncodingStatus = 'pending', UniversalEncodingStatus = 'pending')
+    job = models.Job(file_id = imageId, face_encoding_status = 'pending', universal_encoding_status = 'pending')
     db.add(job)
     db.commit()
 

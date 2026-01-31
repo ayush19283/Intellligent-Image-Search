@@ -19,7 +19,7 @@ def process_image(body):
     job_id = int(body)
     conn, cur = db_client.get_conn()
 
-    cur.execute("SELECT fileID, url from files JOIN Jobs ON Files.ID = Jobs.FileID WHERE jobs.ID == %s AND job.FaceEncodingStatus = 'pending",(job_id,))
+    cur.execute("SELECT file_id, url from files JOIN Jobs ON files_id = Jobs.file_id WHERE jobs.id == %s AND job.face_encoding_status = 'pending",(job_id,))
 
     job = cur.fetchone()
     if not job:
@@ -32,7 +32,7 @@ def process_image(body):
     face_encodings = encodeFace(image)
 
     if not face_encodings:
-        cur.execute("Update jobs SET FaceEncodingStatus = 'failed' WHERE id = %s",(job_id,))
+        cur.execute("Update jobs SET face_encoding_status = 'failed' WHERE id = %s",(job_id,))
         conn.commit()
         print(f"No faces found in image for job id {job_id}")
         return
@@ -42,8 +42,8 @@ def process_image(body):
     for encoding, location in zip(face_encodings):
 
         cur.execute(
-            "Select ID, Embedding <-> %s as distance FROM UniqueFaces " \
-            "where Embedding <-> %s < %s ORDER BY distance ASC LIMIT 1",( str(encoding.tolist()), str(encoding.tolist()), float(os.getenv("FACE_ENCODING_THRESHOLD") ) )
+            "Select id, embedding <-> %s as distance FROM unique_faces " \
+            "where embedding <-> %s < %s ORDER BY distance ASC LIMIT 1",( str(encoding.tolist()), str(encoding.tolist()), float(os.getenv("FACE_ENCODING_THRESHOLD") ) )
         )
 
         result = cur.fetchone()
@@ -64,16 +64,16 @@ def process_image(body):
             url = f'{os.getenv("SERVER_HOST")}/api/files/download/faces/{filename}'
         
             cur.execute(
-                "INSERT into unique_face (Embedding, Url) VALUES (%s, %s) RETURNING ID", 
+                "INSERT into unique_face (embedding, url) VALUES (%s, %s) RETURNING id", 
                 (str(encoding.tolist()), url)        
             )    
             uniqueFaceId = cur.fetchone()['id']
 
         cur.execute(
-            "INSERT INTO faces (FileId, UniqueFaceId, Coordinates) VALUES (%s, %s, %s)",
+            "INSERT INTO faces (file_id, unique_face_id, coordinates) VALUES (%s, %s, %s)",
             (job['id'], uniqueFaceId, list(location))
         )
 
-    cur.execute("UPDATE jobs SET FaceEncodingStatus = 'completed' WHERE id = %s", (job_id,))
+    cur.execute("UPDATE jobs SET face_encoding_status = 'completed' WHERE id = %s", (job_id,))
     conn.commit()
     print(f"Successfully processed job id {job_id}")

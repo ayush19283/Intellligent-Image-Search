@@ -6,18 +6,18 @@ from .utils import TriggerImageProcessingJob
 
 def signup(db: Session, email: str, password: str, name: str=""):
     usr = models.User
-    exists = db.query(usr).filter(usr.Email == email).first()
+    exists = db.query(usr).filter(usr.email == email).first()
 
     if exists:
         return {"error": "email already exists"}
     
-    user = usr(Email = email, Password = password, Name = name)
+    user = usr(email = email, password = password, name = name)
 
     db.add(user)
     db.commit()
     db.refresh(user)
 
-    return {"id": user.ID, "email": user.Email}
+    return {"id": user.id, "email": user.email}
 
 def signin(db: Session, email: str, password: str):
     usr = models.User
@@ -25,7 +25,7 @@ def signin(db: Session, email: str, password: str):
 
     if exists:
         if(exists.Password == password):
-            return {"id": exists.ID, "email": exists.Email}
+            return {"id": exists.id, "email": exists.email}
         else:
             return {"error": "wrong password"}
     
@@ -38,7 +38,7 @@ async def uploadFile(db: Session, uploadedfile: UploadFile):
         with open(f"uploads/{datetime.now()}.png","wb") as f:
             f.write(await uploadedfile.read())
 
-        file = models.File(Name = uploadedfile.filename, Url = f"uploads/{datetime.now()}.png", UserId = 1)
+        file = models.File(name = uploadedfile.filename, url = f"uploads/{datetime.now()}.png", user_id = 1)
 
         db.add(file)
         db.commit()
@@ -46,6 +46,6 @@ async def uploadFile(db: Session, uploadedfile: UploadFile):
 
         print("received file - invoking queue")
 
-        TriggerImageProcessingJob(file.ID,db)
+        TriggerImageProcessingJob(file.id,db)
        
         return {"file recived",uploadedfile.filename}

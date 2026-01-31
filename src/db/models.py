@@ -9,50 +9,48 @@ class Base(DeclarativeBase):
 class User(Base):
     __tablename__ = "user"
 
-    ID = Column(Integer,primary_key=True)
-    Name = Column(String(50))
-    Email = Column(String(120),unique=True)
-    Password = Column(Text)
-    CreatedAt = Column(DateTime)
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50))
+    email = Column(String(120), unique=True)
+    password = Column(Text)
+    created_at = Column(DateTime)
     
 class File(Base):
     __tablename__ = "files"
 
-    ID = Column(Integer,primary_key=True)
-    Name = Column(String(120))
-    Description = Column(String(512))
-    UploadedAt = Column(DateTime, default = func.now())
-    Embedding = Column(Vector(512))
-    Url = Column(Text)
+    id = Column(Integer, primary_key=True)
+    name = Column(String(120))
+    description = Column(String(512))
+    uploaded_at = Column(DateTime, default=func.now())
+    embedding = Column(Vector(512))
+    url = Column(Text)
 
-    UserId = Column(Integer, ForeignKey("user.ID"))
+    user_id = Column(Integer, ForeignKey("user.id"))
 
 class Job(Base):
     __tablename__ = "jobs"
 
-    ID = Column(Integer, primary_key=True)
-    FileId = Column(Integer,ForeignKey("files.ID"))
-    StartedAt = Column(DateTime, default = func.now())
-    EndedAt = Column(DateTime, default = func.now())
-    FaceEncodingStatus = Column(String(50))
-    UniversalEncodingStatus = Column(String(50))
+    id = Column(Integer, primary_key=True)
+    file_id = Column(Integer, ForeignKey("files.id"))
+    started_at = Column(DateTime, default=func.now())
+    ended_at = Column(DateTime, default=func.now())
+    face_encoding_status = Column(String(50))
+    universal_encoding_status = Column(String(50))
 
 
 class UniqueFace(Base):
     __tablename__ = "unique_faces"
 
-    ID = Column(Integer, primary_key=True)
-    Name = Column(String(50), nullable=False)
-    Embedding = Column(Vector(512))
-    Url = Column(Text)
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), nullable=False)
+    embedding = Column(Vector(512))
+    url = Column(Text)
     
 
 class Face(Base):
     __tablename__ = "faces"
 
-    ID = Column(Integer, primary_key=True)
-    FileId = Column(Integer, ForeignKey("files.ID"))
-    UniqueFaceId = Column(Integer, ForeignKey("unique_faces.ID"))
-    Coordinates = Column(ARRAY(Float))
-
-
+    id = Column(Integer, primary_key=True)
+    file_id = Column(Integer, ForeignKey("files.id"))
+    unique_face_id = Column(Integer, ForeignKey("unique_faces.id"))
+    coordinates = Column(ARRAY(Float))

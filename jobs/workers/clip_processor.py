@@ -30,8 +30,8 @@ def process_image(ch, method, properties, body):
     job_id = int(body)
     conn, cur = db_client.get_conn()
     cur.execute(
-        "Select Url, files.ID from files JOIN jobs ON files.ID = job.fileID WHERE " \
-         "jobs.ID == %s AND jobs.UniversalEncodingStatus == 'pending'",(job_id,)
+        "Select url, files.id from files JOIN jobs ON files.id = job.file_id WHERE " \
+         "jobs.id == %s AND jobs.universal_encoding_status == 'pending'",(job_id,)
     )
 
     job = cur.fetchone()
@@ -40,7 +40,7 @@ def process_image(ch, method, properties, body):
         print(f"No pending job found with id {job_id}")
         return
     
-    file_url = job["Url"]
+    file_url = job["url"]
     image_response = requests.get(file_url)
     image_bytes = image_response.content
     image = Image.open(io.BytesIO(image_bytes))
@@ -50,7 +50,7 @@ def process_image(ch, method, properties, body):
     cur.execute("UPDATE jobs SET universal_encoding_status = 'completed' WHERE id = %s", (job_id,))
     conn.commit()
 
-    cur.execute("Update files SET embedding = %s where fileID = %s",(image_embeddings, job['fileID']))
+    cur.execute("Update files SET embedding = %s where file_id = %s",(image_embeddings, job['file_id']))
     conn.commit()
     return
 
