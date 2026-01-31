@@ -1,8 +1,9 @@
+import dotenv
 import pika
 import workers.clip_processor as clip_processor
 import workers.face_encoder as face_encoder
 import os
-
+dotenv.load_dotenv()
 
 RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "localhost")
 RABBITMQ_PORT = int(os.getenv("RABBITMQ_PORT", 5672))

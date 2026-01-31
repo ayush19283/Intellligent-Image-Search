@@ -30,7 +30,7 @@ def process_image(ch, method, properties, body):
     job_id = int(body)
     conn, cur = db_client.get_conn()
     cur.execute(
-        "Select Url, files.ID from files JOIN jobs ON files.ID = job.fileID WHERE" \
+        "Select Url, files.ID from files JOIN jobs ON files.ID = job.fileID WHERE " \
          "jobs.ID == %s AND jobs.UniversalEncodingStatus == 'pending'",(job_id,)
     )
 
