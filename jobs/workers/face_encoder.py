@@ -19,7 +19,7 @@ def process_image(ch, method, properties,body):
     job_id = int(body)
     conn, cur = db_client.get_conn()
 
-    cur.execute("SELECT file_id, url from files JOIN Jobs ON files_id = Jobs.file_id WHERE jobs.id == %s AND job.face_encoding_status = 'pending",(job_id,))
+    cur.execute("SELECT file_id, url from files JOIN Jobs ON files_id = Jobs.file_id WHERE jobs.id == %s AND job.face_encoding_status = 'pending'",(job_id,))
 
     job = cur.fetchone()
     if not job:
