@@ -15,7 +15,7 @@ def encodeFace(image):
     face_locations = face_recognition.face_locations(image)
     return face_encodings, face_locations if face_encodings else ([], [])
 
-def process_image(body):
+def process_image(ch, method, properties,body):
     job_id = int(body)
     conn, cur = db_client.get_conn()
 
