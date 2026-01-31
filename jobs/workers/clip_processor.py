@@ -1,6 +1,6 @@
 from transformers import CLIPModel, CLIPProcessor
 from PIL import Image
-import jobs.db_client as db_client
+import db_client 
 import requests
 import io
 import json
