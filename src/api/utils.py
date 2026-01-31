@@ -30,7 +30,7 @@ def TriggerQueue(chName, message):
     key = channel.queue_declare(queue=chName)
 
     channel.basic_publish(exchange='',
-                      routing_key=key,
+                      routing_key=chName,
                       body=message)
 
 def TriggerImageProcessingJob(imageId: int, db):
