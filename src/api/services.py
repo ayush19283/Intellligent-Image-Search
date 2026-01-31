@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from src.db import models
 from fastapi import UploadFile
 from datetime import datetime
-import utils
+from .utils import TriggerImageProcessingJob
 
 def signup(db: Session, email: str, password: str, name: str=""):
     usr = models.User
@@ -46,6 +46,6 @@ async def uploadFile(db: Session, uploadedfile: UploadFile):
 
         print("received file - invoking queue")
 
-        utils.TriggerImageProcessingJob(file.ID,db)
+        TriggerImageProcessingJob(file.ID,db)
        
         return {"file recived",uploadedfile.filename}
