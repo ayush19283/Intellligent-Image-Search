@@ -1,14 +1,23 @@
 from transformers import CLIPModel, CLIPProcessor
 from PIL import Image
-import db_client 
 import requests
 import io
 import json
+import os
+import redis
+import db_client
 
 model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
-redis_client = db_client.get_redis_client()
 
+def get_redis_client():
+    REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+    REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
+    print("Connecting to Redis server...", REDIS_HOST, REDIS_PORT)
+    redis_url = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
+    return redis.from_url(redis_url)
+
+redis_client = get_redis_client()
 
 def encode_image(image):
     inputs = processor(images=image, return_tensors = "pt")
