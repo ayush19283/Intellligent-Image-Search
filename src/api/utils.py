@@ -27,7 +27,7 @@ def TriggerQueue(chName, message):
     ))
     channel = connection.channel()
 
-    key = channel.queue_declare(queue=chName)
+    channel.queue_declare(queue=chName)
 
     channel.basic_publish(exchange='',
                       routing_key=chName,
@@ -39,9 +39,9 @@ def TriggerImageProcessingJob(imageId: int, db):
     job = models.Job(file_id = imageId, face_encoding_status = 'pending', universal_encoding_status = 'pending')
     db.add(job)
     db.commit()
-
-    TriggerQueue("clip_processor",str(imageId))
-    TriggerQueue("face_encoder",str(imageId))
+    print("started with job id",job.id)
+    TriggerQueue("clip_processor",str(job.id))
+    TriggerQueue("face_encoder",str(job.id))
 
 
 def GetEmbedding(querry: str):

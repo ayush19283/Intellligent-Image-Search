@@ -19,17 +19,19 @@ def process_image(ch, method, properties,body):
     job_id = int(body)
     conn, cur = db_client.get_conn()
 
-    cur.execute("SELECT file_id, url from files JOIN Jobs ON files_id = Jobs.file_id WHERE jobs.id == %s AND job.face_encoding_status = 'pending'",(job_id,))
+    cur.execute("SELECT file_id, url from files JOIN jobs ON files.id = jobs.file_id WHERE jobs.id = %s AND jobs.face_encoding_status = 'pending'",(job_id,))
 
     job = cur.fetchone()
     if not job:
         print(f"No pending job found with id {job_id}")
         return
-    file_url = job.get('url')
+    # file_url = job.get('url')
+
+    file_url = f"http://127.0.0.1:8000/{job["url"]}"
 
     response = requests.get(file_url)
     image = io.BytesIO(response.content)
-    face_encodings = encodeFace(image)
+    face_encodings, face_locations = encodeFace(image)
 
     if not face_encodings:
         cur.execute("Update jobs SET face_encoding_status = 'failed' WHERE id = %s",(job_id,))
@@ -39,7 +41,7 @@ def process_image(ch, method, properties,body):
     
     print(f"Found {len(face_encodings)} face(s) in image for job id {job_id}")
 
-    for encoding, location in zip(face_encodings):
+    for encoding, location in zip(face_encodings, face_locations):
 
         cur.execute(
             "Select id, embedding <-> %s as distance FROM unique_faces " \
@@ -49,7 +51,7 @@ def process_image(ch, method, properties,body):
         result = cur.fetchone()
 
         if result:
-            uniqueFaceId = result[1]
+            uniqueFaceId = result['id']
         else:
             top, right, bottom, left = location
             image = io.BytesIO(response.content)
@@ -64,7 +66,7 @@ def process_image(ch, method, properties,body):
             url = f'{os.getenv("SERVER_HOST")}/api/files/download/faces/{filename}'
         
             cur.execute(
-                "INSERT into unique_face (embedding, url) VALUES (%s, %s) RETURNING id", 
+                "INSERT into unique_faces (embedding, url) VALUES (%s, %s) RETURNING id", 
                 (str(encoding.tolist()), url)        
             )    
             uniqueFaceId = cur.fetchone()['id']

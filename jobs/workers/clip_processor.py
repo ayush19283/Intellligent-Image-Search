@@ -6,6 +6,7 @@ import json
 import os
 import redis
 import db_client
+from urllib.parse import quote_plus
 
 model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
@@ -40,17 +41,21 @@ def process_image(ch, method, properties, body):
         print(f"No pending job found with id {job_id}")
         return
     
-    file_url = job["url"]
+    file_url = f"http://127.0.0.1:8000/{job["url"]}"
+
+    print("file url is", job["id"])
+    
     image_response = requests.get(file_url)
     image_bytes = image_response.content
     image = Image.open(io.BytesIO(image_bytes))
 
-    image_embeddings = encode_image(image)
+    image_embeddings = encode_image(image)[0][0]
+    print("embedding is", image_embeddings)
 
     cur.execute("UPDATE jobs SET universal_encoding_status = 'completed' WHERE id = %s", (job_id,))
     conn.commit()
 
-    cur.execute("Update files SET embedding = %s where file_id = %s",(image_embeddings, job['file_id']))
+    cur.execute("Update files SET embedding = %s where id = %s",(image_embeddings, job["id"],))
     conn.commit()
     return
 

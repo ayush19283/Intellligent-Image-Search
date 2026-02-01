@@ -3,6 +3,7 @@ from src.db import models
 from fastapi import UploadFile
 from datetime import datetime
 from .utils import TriggerImageProcessingJob
+import uuid
 
 def signup(db: Session, email: str, password: str, name: str=""):
     usr = models.User
@@ -35,10 +36,11 @@ async def uploadFile(db: Session, uploadedfile: UploadFile):
     if not uploadedfile:
         return {"error":"No file attached"}
     else:
-        with open(f"uploads/{datetime.now()}.png","wb") as f:
+        unique_file_name = str(uuid.uuid4())
+        with open(f"uploads/{unique_file_name}.png","wb") as f:
             f.write(await uploadedfile.read())
 
-        file = models.File(name = uploadedfile.filename, url = f"uploads/{datetime.now()}.png", user_id = 1)
+        file = models.File(name = uploadedfile.filename, url = f"uploads/{unique_file_name}.png", user_id = 1)
 
         db.add(file)
         db.commit()
