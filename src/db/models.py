@@ -43,7 +43,7 @@ class UniqueFace(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
-    embedding = Column(Vector(512))
+    embedding = Column(Vector(128))
     url = Column(Text)
     
 
