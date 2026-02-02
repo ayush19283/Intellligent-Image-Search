@@ -10,8 +10,11 @@ from urllib.parse import quote_plus
 
 # model_path = os.path.expanduser("~/.cache/huggingface/hub/models--openai--clip-vit-base-patch32")
 
-model = CLIPModel.from_pretrained("../local_clip_model")
-processor = CLIPProcessor.from_pretrained("../local_clip_model")
+# model = CLIPModel.from_pretrained("../local_clip_model")
+# processor = CLIPProcessor.from_pretrained("../local_clip_model")
+
+model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
 
 
