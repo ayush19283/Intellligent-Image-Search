@@ -54,7 +54,9 @@ async def uploadFile(db: Session, uploadedfile: UploadFile):
 def getFile(db: Session, querry: str):
     file = models.File
     if querry:
-        result = db.query(file).filter(file.embedding == GetEmbedding(querry))
+        embedding = GetEmbedding(querry)
+        print("embedding",)
+        result = db.query(file).filter(file.embedding == embedding)
         return {"embeddings":result}
     
 

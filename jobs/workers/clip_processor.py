@@ -56,8 +56,8 @@ def process_image(ch, method, properties, body):
     image_bytes = image_response.content
     image = Image.open(io.BytesIO(image_bytes))
 
-    image_embeddings = encode_image(image)[0][0]
-    print("embedding is", image_embeddings)
+    image_embeddings = encode_image(image)
+    # print("embedding is", image_embeddings)
 
     cur.execute("UPDATE jobs SET universal_encoding_status = 'completed' WHERE id = %s", (job_id,))
     conn.commit()

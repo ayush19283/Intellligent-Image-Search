@@ -45,14 +45,13 @@ def TriggerImageProcessingJob(imageId: int, db):
 
 
 def GetEmbedding(querry: str):
+    return generate_encoding_for_channel(body = querry)
 
-    return generate_encoding_for_channel(querry)
 
-
-def generate_encoding_for_channel(ch, method, properties, body):
-    print("Received message for generating CLIP encoding", body)
-
-    embeddings = encode_text(text=body.decode('utf-8'))
+def generate_encoding_for_channel(**kwargs):
+    querry = kwargs["blue"]
+    print("Received message for generating CLIP encoding", querry)
+    embeddings = encode_text(text = querry)
     return embeddings
    
 
