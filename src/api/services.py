@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from src.db import models
 from fastapi import UploadFile
 from datetime import datetime
-from .utils import TriggerImageProcessingJob
+from .utils import TriggerImageProcessingJob, GetEmbedding
 import uuid
 
 def signup(db: Session, email: str, password: str, name: str=""):
@@ -35,19 +35,27 @@ def signin(db: Session, email: str, password: str):
 async def uploadFile(db: Session, uploadedfile: UploadFile):
     if not uploadedfile:
         return {"error":"No file attached"}
-    else:
-        unique_file_name = str(uuid.uuid4())
-        with open(f"uploads/{unique_file_name}.png","wb") as f:
-            f.write(await uploadedfile.read())
+    unique_file_name = str(uuid.uuid4())
+    with open(f"uploads/{unique_file_name}.png","wb") as f:
+        f.write(await uploadedfile.read())
 
-        file = models.File(name = uploadedfile.filename, url = f"uploads/{unique_file_name}.png", user_id = 1)
+    file = models.File(name = uploadedfile.filename, url = f"uploads/{unique_file_name}.png", user_id = 1)
 
-        db.add(file)
-        db.commit()
-        db.refresh(file)
+    db.add(file)
+    db.commit()
+    db.refresh(file)
 
-        print("received file - invoking queue")
+    print("received file - invoking queue")
 
-        TriggerImageProcessingJob(file.id,db)
-       
-        return {"file":uploadedfile.filename}
+    TriggerImageProcessingJob(file.id,db)
+    
+    return {"file":uploadedfile.filename}
+    
+def getFile(db: Session, querry: str):
+    file = models.File
+    if querry:
+        result = db.query(file).filter(file.embedding == GetEmbedding(querry))
+        return {"embeddings":result}
+    
+
+

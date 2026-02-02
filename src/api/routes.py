@@ -1,5 +1,5 @@
 from fastapi import FastAPI, APIRouter, Depends, UploadFile
-from .services import signup, signin, uploadFile
+from .services import signup, signin, uploadFile, getFile
 from .schema import SignInRequest, SignUpRequest
 from src.db.database import get_db
 from sqlalchemy.orm import Session
@@ -20,3 +20,6 @@ def SingIn(request : SignInRequest, db:Session = Depends(get_db)):
 async def UploadFile(file : UploadFile, db: Session = Depends(get_db)):
     return await uploadFile(db,file)
 
+@router.get("/image")
+def GetFiles(querry: str, db: Session = Depends(get_db)):
+    return getFile(db, querry)

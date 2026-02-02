@@ -73,7 +73,7 @@ def process_image(ch, method, properties,body):
 
         cur.execute(
             "INSERT INTO faces (file_id, unique_face_id, coordinates) VALUES (%s, %s, %s)",
-            (job['id'], uniqueFaceId, list(location))
+            (job["file_id"], uniqueFaceId, list(location))
         )
 
     cur.execute("UPDATE jobs SET face_encoding_status = 'completed' WHERE id = %s", (job_id,))

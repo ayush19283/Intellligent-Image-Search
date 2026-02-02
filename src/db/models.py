@@ -42,7 +42,7 @@ class UniqueFace(Base):
     __tablename__ = "unique_faces"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(50), nullable=False)
+    name = Column(String(50))
     embedding = Column(Vector(128))
     url = Column(Text)
     
