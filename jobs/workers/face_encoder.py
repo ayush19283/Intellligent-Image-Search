@@ -63,7 +63,7 @@ def process_image(ch, method, properties,body):
             filename = f'face_{job_id}_{secrets.token_hex(16)}.jpg'
             with open(f'../uploads/faces/{filename}', 'wb') as f:
                 f.write(face_image_io.read())
-            url = f'{os.getenv("SERVER_HOST")}/api/files/download/faces/{filename}'
+            url = f'{os.getenv("SERVER_HOST")}/uploads/faces/{filename}'
         
             cur.execute(
                 "INSERT into unique_faces (embedding, url) VALUES (%s, %s) RETURNING id", 

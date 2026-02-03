@@ -1,9 +1,9 @@
 from fastapi import FastAPI, APIRouter, Depends, UploadFile
-from .services import signup, signin, uploadFile, getFile
-from .schema import SignInRequest, SignUpRequest
+from .services import signup, signin, uploadFile, getFile, getUnknownFaces, tagFaces
+from .schema import SignInRequest, SignUpRequest, TagPhotos
 from src.db.database import get_db
 from sqlalchemy.orm import Session
-from typing import Annotated
+from typing import Annotated, List
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
@@ -23,20 +23,20 @@ class Token(BaseModel):
     token_type: str
 
 
-@router.post("/signup")
-def SignUp(request : SignUpRequest, db: Session = Depends(get_db)):
+@router.post("/sign_up")
+def sign_up(request : SignUpRequest, db: Session = Depends(get_db)):
     return signup(db, request.email,request.password,request.name)
 
-@router.post("/signin")
-def SingIn(request : SignInRequest, db:Session = Depends(get_db)):
+@router.post("/sign_in")
+def sign_in(request : SignInRequest, db:Session = Depends(get_db)):
     return signin(db, request.email,request.password)
    
 @router.post("/upload")
-async def UploadFile(file : UploadFile, token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
+async def upload_file(file : UploadFile, token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
     return await uploadFile(db,file,token)
 
 @router.get("/image")
-def GetFiles(querry: str, 
+def get_files(querry: str, 
              token: Annotated[str, Depends(oauth2_scheme)],
              db: Session = Depends(get_db)
              ):
@@ -61,6 +61,20 @@ async def login_for_access_token(
     )
     return Token(access_token=access_token, token_type="bearer")
 
-# @router.get("unknown-faces")
-# def GetUnknownFaces():
+@router.get("/unknown_faces")
+def get_unknown_faces(
+    token: Annotated[str, Depends(oauth2_scheme)],
+    db: Session = Depends(get_db)
+):
+    return getUnknownFaces(db=db,token=token)
+    
+
+@router.post("/tag_faces")
+def tag_faces(
+    request: List[TagPhotos],
+    token: Annotated[str, Depends(oauth2_scheme)],
+    db: Session = Depends(get_db)
+):
+    return tagFaces(body=request,token=token,db=db)
+    
 

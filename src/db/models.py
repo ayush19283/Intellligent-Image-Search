@@ -54,3 +54,5 @@ class Face(Base):
     file_id = Column(Integer, ForeignKey("files.id"))
     unique_face_id = Column(Integer, ForeignKey("unique_faces.id"))
     coordinates = Column(ARRAY(Float))
+
+

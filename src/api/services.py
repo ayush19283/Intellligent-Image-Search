@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from src.db import models
-from fastapi import UploadFile, Depends
+from fastapi import UploadFile, Depends, HTTPException
 from datetime import datetime
 from .utils import TriggerImageProcessingJob, GetEmbedding, get_password_hash, verify_password, create_access_token,get_current_user
 import uuid
@@ -9,6 +9,8 @@ from pwdlib import PasswordHash
 from typing import Annotated
 import os
 import jwt
+from typing import List
+from .schema import TagPhotos
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
@@ -75,11 +77,41 @@ def getFile(db: Session, querry: str, token: str):
     if querry:
         embedding = GetEmbedding(querry)
         result = db.execute(
-            text("SELECT id, name, url FROM files WHERE user_id = :username ORDER BY embedding <-> :embedding LIMIT 5"),
-            {"username": username, "embedding": embedding}
+            text(f"SELECT id, name, url FROM files WHERE user_id = {username} ORDER BY embedding <=> '{embedding}' LIMIT 5")
         ).mappings().all()
-        print(result)
         return {"embeddings":result}
     
+def getUnknownFaces(db: Session, token: str):
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    username = payload.get("sub")
+    result = db.query(models.Face, models.UniqueFace, models.File).\
+        join(models.UniqueFace, models.Face.unique_face_id == models.UniqueFace.id).\
+        join(models.File, models.Face.file_id == models.File.id).\
+        filter(models.File.user_id == username).all()
+
+    if result:
+    # Return a list of dictionaries with image URLs
+        return {"image_urls": [face.url for face in result]}
+    else:
+        raise HTTPException(status_code=404, detail="No faces found for this user")
+
+def tagFaces(body: List[TagPhotos],db: Session, token: str):
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    username = payload.get("sub")
+    for uf in body:
+        print("name and id", uf.image_id, uf.unique_name)
+        
+        update_result = db.query(models.UniqueFace).filter(models.UniqueFace.id == uf.image_id).update(
+            {'name': uf.unique_name}
+        )
+        
+        if update_result == 0:
+            raise HTTPException(status_code=404, detail=f"UniqueFace with ID {uf.image_id} not found")
+        
+    db.commit()
+    
+    return {"staus":"uploaded successfully"}
+    
+
 
 # def getUnknownFaces(db: Session):

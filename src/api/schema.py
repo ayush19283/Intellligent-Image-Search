@@ -8,3 +8,7 @@ class SignUpRequest(BaseModel):
 class SignInRequest(BaseModel):
     email : str
     password : str
+
+class TagPhotos(BaseModel):
+    image_id : str
+    unique_name : str
