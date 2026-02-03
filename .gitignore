@@ -6,3 +6,4 @@ __pycache__/
 Dockerfile
 run.sh
 local_clip_model
+uploads
