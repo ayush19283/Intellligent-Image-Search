@@ -19,7 +19,7 @@ This project allows users to upload photos to the server, which are processed us
 - **Face Recognition** for identifying faces and extracting facial features.
 - **RabbitMQ** for message queuing to handle asynchronous tasks efficiently.
 - **Python**: Core language for implementing the logic and processing.
-- **Flask/Django**: (Optional) Web framework for handling image uploads and API requests.
+- **FastAPI**: For handling image uploads and API requests.
   
 ## Setup
 
