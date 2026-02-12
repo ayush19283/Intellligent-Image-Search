@@ -15,6 +15,8 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
 from sqlalchemy.orm import Session
 from src.db import models
+from kafka import KafkaProducer
+import json
 
 
 password_hash = PasswordHash.recommended()
@@ -50,9 +52,20 @@ def TriggerQueue(chName, message):
     channel.basic_publish(exchange='',
                       routing_key=chName,
                       body=message)
+    
+
+def TriggerKafka(job_id):
+    producer = KafkaProducer(
+        bootstrap_servers = ['localhost:9092'],
+        value_serializer = lambda v: json.dumps(v).encode('utf-8')
+    )
+
+    topic_name = 'clip_processor'
+    data={"job_id",job_id}
+    producer.send(topic=topic_name,value=data)
+
 
 def TriggerImageProcessingJob(imageId: int, db):
-
 
     job = models.Job(file_id = imageId, face_encoding_status = 'pending', universal_encoding_status = 'pending')
     db.add(job)
